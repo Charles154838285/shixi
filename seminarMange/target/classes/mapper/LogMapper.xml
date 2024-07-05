@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.rbac.log.mapper.LogMapper">
+
+    <resultMap type="com.framework.rbac.log.model.Log" id="LogResultMap">
+        <result column="id" jdbcType="VARCHAR" property="id" javaType="java.lang.String"/>
+        <result column="name" jdbcType="VARCHAR" property="name" javaType="java.lang.String"/>
+        <result column="account" jdbcType="VARCHAR" property="account" javaType="java.lang.String"/>
+        <result column="ip" jdbcType="VARCHAR" property="ip" javaType="java.lang.String"/>
+        <result column="method" jdbcType="VARCHAR" property="method" javaType="java.lang.String"/>
+        <result column="params" jdbcType="VARCHAR" property="params" javaType="java.lang.String"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate" javaType="java.util.Date"/>
+    </resultMap>
+
+    <sql id="sys_log_columns">
+    id,name,account,ip,method,params,create_date
+    </sql>
+
+    <sql id="sys_log_columns_alias">
+    ${alias}.id,${alias}.name,${alias}.account,${alias}.ip,${alias}.method,${alias}.params,${alias}.create_date
+    </sql>
+
+    <select id="list" resultMap="LogResultMap">
+        SELECT
+        <include refid="sys_log_columns"/>
+        FROM sys_log
+    </select>
+
+    <delete id="delete">
+        DELETE FROM sys_log WHERE id
+        <foreach collection="array" item="id" open="IN(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.framework.rbac.log.model.Log">
+        INSERT INTO sys_log
+        (id,name,account,ip,method,params,create_date)
+        VALUES
+        (UUID(),#{name},#{account},#{ip},#{method},#{params},#{createDate})
+    </insert>
+
+
+</mapper>

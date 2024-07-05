@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.seminar.mapper.SeminarMapper">
+
+    <resultMap type="com.framework.seminar.model.Seminar" id="SeminarResultMap">
+        <id column="room_id" property="roomId"/>
+        <result column="room_name" property="roomName"/>
+        <result column="room_type" property="roomType"/>
+        <result column="capacity" property="capacity"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <sql id="sys_room_columns">
+        room_id,room_name,room_type,capacity,status
+    </sql>
+
+    <select id="list" resultMap="SeminarResultMap">
+        SELECT <include refid="sys_room_columns" /> FROM seminar
+        ORDER BY room_id ASC
+    </select>
+
+    <insert id="add" parameterType="com.framework.seminar.model.Seminar">
+        INSERT INTO seminar
+            (room_name,room_type,capacity)
+        VALUES
+            (#{roomName},#{roomType},#{capacity})
+    </insert>
+
+    <select id="queryNameCount" resultType="_int">
+        SELECT COUNT(*) FROM seminar
+        WHERE room_name=#{roomName}
+    </select>
+
+    <select id="load" resultMap="SeminarResultMap">
+        SELECT <include refid="sys_room_columns" /> FROM seminar
+        WHERE room_id=#{id}
+    </select>
+
+    <update id="update" parameterType="com.framework.seminar.model.Seminar">
+        UPDATE seminar
+        <set>
+            <if test="roomName!=null and roomName!= ''">
+                room_name=#{roomName},
+            </if>
+            <if test="roomType!=null and roomType!= ''">
+                room_type=#{roomType},
+            </if>
+            <if test="capacity!=null">
+                capacity=#{capacity},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+        </set>
+        WHERE room_id=#{roomId}
+    </update>
+
+
+</mapper>

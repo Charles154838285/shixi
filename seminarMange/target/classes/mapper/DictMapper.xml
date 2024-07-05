@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.rbac.dict.mapper.DictMapper">
+
+    <resultMap type="com.framework.rbac.dict.model.Dict" id="DictResultMap">
+        <result column="id" jdbcType="VARCHAR" property="id" javaType="java.lang.String"/>
+        <result column="dict_name" jdbcType="VARCHAR" property="dictName" javaType="java.lang.String"/>
+        <result column="dict_value" jdbcType="VARCHAR" property="dictValue" javaType="java.lang.String"/>
+        <result column="dict_key" jdbcType="VARCHAR" property="dictKey" javaType="java.lang.String"/>
+        <result column="sort" jdbcType="INTEGER" property="sort" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <sql id="sys_dict_columns">
+    id,dict_name,dict_value,dict_key,sort
+    </sql>
+
+    <sql id="sys_dict_columns_alias">
+    ${alias}.id,${alias}.dict_name,${alias}.dict_value,${alias}.dict_key,${alias}.sort
+    </sql>
+    <resultMap id="DictViewResultMap" type="map">
+        <result column="key" property="key"/>
+        <collection property="tempDictList" javaType="list" ofType="map">
+            <result column="label" property="label"/>
+            <result column="value" property="value"/>
+        </collection>
+    </resultMap>
+    <select id="getInitDictMap" resultMap="DictViewResultMap">
+        SELECT * FROM sys_dict_view
+    </select>
+
+    <select id="list" resultMap="DictResultMap">
+        SELECT
+        <include refid="sys_dict_columns"/>
+        FROM sys_dict
+        ORDER BY id ${order}
+        LIMIT ${offset},${limit}
+    </select>
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*) FROM sys_dict
+    </select>
+    <select id="load" resultMap="DictResultMap">
+        SELECT
+        <include refid="sys_dict_columns"/>
+        FROM sys_dict
+        WHERE id = #{id}
+    </select>
+    <update id="update" parameterType="com.framework.rbac.dict.model.Dict">
+        UPDATE sys_dict
+        <set>
+            <if test="dictName != null and dictName != ''">
+                dict_name = #{dictName},
+            </if>
+            <if test="dictValue != null and dictValue != ''">
+                dict_value = #{dictValue},
+            </if>
+            <if test="dictKey != null and dictKey != ''">
+                dict_key = #{dictKey},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM sys_dict WHERE id = #{id}
+    </delete>
+
+    <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.framework.rbac.dict.model.Dict">
+        INSERT INTO sys_dict
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="dictName != null and dictName != ''">
+                dict_name,
+            </if>
+            <if test="dictValue != null and dictValue != ''">
+                dict_value,
+            </if>
+            <if test="dictKey != null and dictKey != ''">
+                dict_key,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            UUID(),
+            <if test="dictName != null and dictName != ''">
+                #{dictName},
+            </if>
+            <if test="dictValue != null and dictValue != ''">
+                #{dictValue},
+            </if>
+            <if test="dictKey != null and dictKey != ''">
+                #{dictKey},
+            </if>
+            <if test="sort != null">
+                #{sort},
+            </if>
+        </trim>
+
+    </insert>
+
+
+</mapper>

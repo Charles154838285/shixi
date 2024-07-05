@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.rbac.menu.mapper.MenuMapper">
+
+    <resultMap type="com.framework.rbac.menu.model.Menu" id="MenuResultMap">
+        <result column="menu_id" jdbcType="INTEGER" property="menuId" javaType="java.lang.Integer"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parentId" javaType="java.lang.Integer"/>
+        <result column="menu_name" jdbcType="VARCHAR" property="menuName" javaType="java.lang.String"/>
+        <result column="icon" jdbcType="VARCHAR" property="icon" javaType="java.lang.String"/>
+        <result column="url" jdbcType="VARCHAR" property="url" javaType="java.lang.String"/>
+        <result column="sort" jdbcType="INTEGER" property="sort" javaType="java.lang.Integer"/>
+        <result column="status" jdbcType="INTEGER" property="status" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <sql id="sys_menu_columns">
+    menu_id,parent_id,menu_name,icon,url,sort,status
+    </sql>
+
+    <sql id="sys_menu_columns_alias">
+    ${alias}.menu_id,${alias}.parent_id,${alias}.menu_name,${alias}.icon,${alias}.url,${alias}.sort,${alias}.status
+    </sql>
+    <resultMap id="MenuTreeResultMapper" type="com.framework.rbac.menu.model.Menu">
+        <id column="parentId" property="menuId"/>
+        <result column="parentName" property="menuName"/>
+        <result column="parentIcon" property="icon"/>
+        <collection property="childMenuList" javaType="list" ofType="com.framework.rbac.menu.model.Menu">
+            <id column="childId" property="menuId"/>
+            <result column="childName" property="menuName"/>
+            <result column="childIcon" property="icon"/>
+            <result column="url" property="url"/>
+        </collection>
+    </resultMap>
+    <select id="getLeftNavList" parameterType="int" resultMap="MenuTreeResultMapper">
+        SELECT * FROM menu_tree_view WHERE childId IN (SELECT menu_id FROM role_link_menu WHERE role_id=#{roleId})
+    </select>
+
+    <select id="getSelectedMenuList" parameterType="int" resultType="com.framework.rbac.menu.model.Menu">
+        SELECT menu_id menuId,menu_name menuName FROM sys_menu
+        WHERE menu_id IN (SELECT menu_id FROM role_link_menu WHERE role_id=#{roleId})
+    </select>
+    <select id="getUnSelectedMenuList" parameterType="int" resultType="com.framework.rbac.menu.model.Menu">
+        SELECT menu_id menuId,menu_name menuName FROM sys_menu
+        WHERE menu_id NOT IN (SELECT menu_id FROM role_link_menu WHERE role_id=#{roleId}) AND parent_id IS NOT NULL
+    </select>
+
+    <!-- 属性结构 -->
+    <resultMap id="NodeBaseResultMap" type="com.framework.rbac.menu.model.MenuNode">
+        <id column="menu_id" property="id"/>
+        <result column="menu_name" property="text"/>
+        <result column="icon" property="icon"/>
+    </resultMap>
+    <resultMap id="TreeResultMap" type="com.framework.rbac.menu.model.MenuNode" extends="NodeBaseResultMap">
+        <collection property="children" ofType="com.framework.rbac.menu.model.MenuNode"
+                    column="menu_id" select="getTreeChildNodeList"/>
+    </resultMap>
+    <select id="geTreeParentNodeList" resultMap="TreeResultMap">
+        SELECT menu_id,menu_name,if(length(icon),icon,'fa fa-folder') icon FROM sys_menu WHERE parent_id IS NULL
+    </select>
+    <select id="getTreeChildNodeList" parameterType="int" resultMap="NodeBaseResultMap">
+        SELECT menu_id,menu_name,if(length(icon),icon,'fa fa-file-picture-o') icon FROM sys_menu WHERE parent_id=#{parentId}
+    </select>
+
+    <select id="getParentMenuList" resultMap="MenuResultMap">
+        SELECT menu_id,menu_name FROM sys_menu WHERE parent_id IS NULL
+    </select>
+
+    <select id="list" resultMap="MenuResultMap">
+        SELECT
+        <include refid="sys_menu_columns"/>
+        FROM sys_menu
+    </select>
+    <select id="load" resultMap="MenuResultMap">
+        SELECT
+        <include refid="sys_menu_columns"/>
+        FROM sys_menu
+        WHERE menu_id = #{menuId}
+    </select>
+    <update id="update" parameterType="com.framework.rbac.menu.model.Menu">
+        UPDATE sys_menu
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="menuName != null and menuName != ''">
+                menu_name = #{menuName},
+            </if>
+            <if test="icon != null and icon != ''">
+                icon = #{icon},
+            </if>
+            <if test="url != null and url != ''">
+                url = #{url},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        WHERE menu_id = #{menuId}
+    </update>
+    <delete id="delete" parameterType="com.framework.rbac.menu.model.Menu">
+        <if test="parentId!=null">
+            DELETE FROM role_link_menu WHERE menu_id=#{menuId};
+        </if>
+        DELETE FROM sys_menu WHERE menu_id = #{menuId}
+    </delete>
+
+    <insert id="add" keyProperty="menuId" useGeneratedKeys="true" parameterType="com.framework.rbac.menu.model.Menu">
+        INSERT INTO sys_menu
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="menuName != null and menuName != ''">
+                menu_name,
+            </if>
+            <if test="icon != null and icon != ''">
+                icon,
+            </if>
+            <if test="url != null and url != ''">
+                url,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                #{parentId},
+            </if>
+            <if test="menuName != null and menuName != ''">
+                #{menuName},
+            </if>
+            <if test="icon != null and icon != ''">
+                #{icon},
+            </if>
+            <if test="url != null and url != ''">
+                #{url},
+            </if>
+            <if test="sort != null">
+                #{sort},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+        </trim>
+
+    </insert>
+
+
+</mapper>

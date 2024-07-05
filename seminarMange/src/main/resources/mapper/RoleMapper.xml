@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.rbac.role.mapper.RoleMapper">
+
+    <resultMap type="com.framework.rbac.role.model.Role" id="RoleResultMap">
+        <result column="role_id" jdbcType="INTEGER" property="roleId" javaType="java.lang.Integer"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName" javaType="java.lang.String"/>
+        <result column="role_key" jdbcType="VARCHAR" property="roleKey" javaType="java.lang.String"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark" javaType="java.lang.String"/>
+    </resultMap>
+
+    <sql id="sys_role_columns">
+    role_id,role_name,role_key,remark
+    </sql>
+
+    <sql id="sys_role_columns_alias">
+    ${alias}.role_id,${alias}.role_name,${alias}.role_key,${alias}.remark
+    </sql>
+
+    <select id="list" resultMap="RoleResultMap">
+        SELECT <include refid="sys_role_columns"/> FROM sys_role
+    </select>
+    <select id="load" resultMap="RoleResultMap">
+        SELECT
+        <include refid="sys_role_columns"/>
+        FROM sys_role
+        WHERE role_id = #{roleId}
+    </select>
+    <update id="update" parameterType="com.framework.rbac.role.model.Role">
+        UPDATE sys_role
+        <set>
+            <if test="roleName != null and roleName != ''">
+                role_name = #{roleName},
+            </if>
+            <if test="roleKey != null and roleKey != ''">
+                role_key = #{roleKey},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        WHERE role_id = #{roleId}
+    </update>
+    <delete id="delete">
+        UPDATE sys_user SET role_id=null WHERE role_id = #{roleId};
+        DELETE FROM role_link_menu WHERE role_id = #{roleId};
+        DELETE FROM sys_role WHERE role_id = #{roleId};
+    </delete>
+
+    <select id="getRoleKeyCount" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM sys_role WHERE role_key=#{roleKey}
+    </select>
+
+    <insert id="add" keyProperty="roleId" useGeneratedKeys="true" parameterType="com.framework.rbac.role.model.Role">
+        INSERT INTO sys_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName != null and roleName != ''">
+                role_name,
+            </if>
+            <if test="roleKey != null and roleKey != ''">
+                role_key,
+            </if>
+            <if test="remark != null and remark != ''">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="roleName != null and roleName != ''">
+                #{roleName},
+            </if>
+            <if test="roleKey != null and roleKey != ''">
+                #{roleKey},
+            </if>
+            <if test="remark != null and remark != ''">
+                #{remark},
+            </if>
+        </trim>
+
+    </insert>
+
+    <insert id="updatePermission">
+         DELETE FROM role_link_menu WHERE role_id = #{roleId};
+         <if test="menus!=null">
+             INSERT INTO role_link_menu (id,role_id,menu_id) VALUES
+             <foreach collection="menus" item="menuId" separator=",">
+                 (UUID(),#{roleId},#{menuId})
+             </foreach>
+         </if>
+    </insert>
+</mapper>

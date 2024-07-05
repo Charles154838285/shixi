@@ -1,0 +1,43 @@
+
+[
+    {
+        "dict_id": 100,
+        "label": "男生",
+        "value": "男",
+        "dict_type": "SEX",
+        "sort": 0,
+        "property": "扩展属性"
+    },
+    {
+        "dict_id": 200,
+        "label": "女生",
+        "value": "女",
+        "dict_type": "SEX",
+        "sort": 1,
+        "property": "扩展属性"
+    },
+    {
+        "dict_id": 300,
+        "label": "激活",
+        "value": 1,
+        "dict_type": "USER_STATUS",
+        "sort": 0,
+        "property": "扩展属性"
+    },
+    {
+        "dict_id": 400,
+        "label": "禁用",
+        "value": 2,
+        "dict_type": "USER_STATUS",
+        "sort": 1,
+        "property": "扩展属性"
+    },
+    {
+        "dict_id": 500,
+        "label": "删除",
+        "value": 3,
+        "dict_type": "USER_STATUS",
+        "sort": 2,
+        "property": "扩展属性"
+    }
+]

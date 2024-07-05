@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.rbac.user.mapper.UserMapper">
+
+    <resultMap type="com.framework.rbac.user.model.User" id="UserResultMap">
+        <result column="user_id" jdbcType="INTEGER" property="userId" javaType="java.lang.Integer"/>
+        <result column="account" jdbcType="VARCHAR" property="account" javaType="java.lang.String"/>
+        <result column="password" jdbcType="VARCHAR" property="password" javaType="java.lang.String"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName" javaType="java.lang.String"/>
+        <result column="status" jdbcType="INTEGER" property="status" javaType="java.lang.Integer"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate" javaType="java.util.Date"/>
+        <result column="login_date" jdbcType="TIMESTAMP" property="loginDate" javaType="java.util.Date"/>
+        <result column="ip_address" jdbcType="VARCHAR" property="ipAddress" javaType="java.lang.String"/>
+        <result column="photo" jdbcType="VARCHAR" property="photo" javaType="java.lang.String"/>
+        <result column="role_id" jdbcType="INTEGER" property="roleId" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <sql id="sys_user_columns">
+    user_id,account,password,user_name,status,create_date,login_date,ip_address,photo,role_id
+    </sql>
+
+    <sql id="sys_user_columns_alias">
+    ${alias}.user_id,${alias}.account,${alias}.password,${alias}.user_name,${alias}.status,${alias}.create_date,${alias}.login_date,${alias}.ip_address,${alias}.photo,${alias}.role_id
+    </sql>
+    <!-- 登录查询 -->
+    <select id="login" resultType="com.framework.rbac.user.model.SessionUser">
+        SELECT user_id userId,account FROM sys_user WHERE account=#{account} AND password=MD5(#{password})
+    </select>
+    <!-- 用户的物理分页 -->
+    <sql id="user_limit_query">
+        <where>
+            <if test="queryMap.roleId != null and queryMap.roleId != ''">
+                role_id = #{queryMap.roleId}
+            </if>
+            <if test="queryMap.userName != null and queryMap.userName != ''">
+               AND user_name LIKE CONCAT('%',#{queryMap.userName},'%')
+            </if>
+        </where>
+    </sql>
+    <resultMap id="UserLimitResultMap" type="com.framework.rbac.user.model.User" extends="UserResultMap">
+        <!-- 关联对象 -->
+        <association property="role" column="role_id" select="com.framework.rbac.role.mapper.RoleMapper.load"/>
+    </resultMap>
+    <select id="getUserList" parameterType="com.framework.commons.model.Page" resultMap="UserLimitResultMap">
+        SELECT
+        <include refid="sys_user_columns"/>
+        FROM sys_user
+        <include refid="user_limit_query"/>
+        LIMIT ${offset},${pageSize}
+    </select>
+    <select id="getTotalCount" parameterType="com.framework.commons.model.Page" resultType="int">
+        SELECT COUNT(*) FROM sys_user <include refid="user_limit_query"/>
+    </select>
+    <!-- 用户的物理分页 介绍-->
+    <!-- 更新系统用户的角色 -->
+    <update id="updateUserRole">
+        UPDATE sys_user
+        <set>
+            <choose>
+                <when test="roleId!=null and roleId==-1">
+                    role_id = null
+                </when>
+                <otherwise>
+                    role_id = #{roleId}
+                </otherwise>
+            </choose>
+        </set>
+        WHERE user_id=#{userId}
+    </update>
+
+    <select id="load" resultMap="UserResultMap">
+        SELECT
+        <include refid="sys_user_columns"/>
+        FROM sys_user
+        WHERE user_id = #{userId}
+    </select>
+    <select id="getUserPasswordCount" resultType="int">
+       SELECT COUNT(*) FROM sys_user
+       WHERE user_id=#{userId} AND password=MD5(#{password})
+    </select>
+    <update id="update" parameterType="com.framework.rbac.user.model.User">
+        UPDATE sys_user
+        <set>
+            <if test="account != null and account != ''">
+                account = #{account},
+            </if>
+            <if test="password != null and password != ''">
+                password =MD5( #{password}),
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="loginDate != null">
+                login_date = #{loginDate},
+            </if>
+            <if test="ipAddress != null and ipAddress != ''">
+                ip_address = #{ipAddress},
+            </if>
+            <if test="photo != null and photo != ''">
+                photo = #{photo},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId},
+            </if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+    <delete id="delete">
+        DELETE FROM sys_user WHERE user_id = #{userId}
+    </delete>
+    <select id="getAccountCount" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM sys_user WHERE account=#{account}
+    </select>
+    <insert id="add" keyProperty="userId" useGeneratedKeys="true" parameterType="com.framework.rbac.user.model.User">
+        INSERT INTO sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="account != null and account != ''">
+                account,
+            </if>
+            <if test="password != null and password != ''">
+                password,
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="loginDate != null">
+                login_date,
+            </if>
+            <if test="ipAddress != null and ipAddress != ''">
+                ip_address,
+            </if>
+            <if test="photo != null and photo != ''">
+                photo,
+            </if>
+            <if test="roleId != null">
+                role_id,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="account != null and account != ''">
+                #{account},
+            </if>
+            <if test="password != null and password != ''">
+                MD5(#{password}),
+            </if>
+            <if test="userName != null and userName != ''">
+                #{userName},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="createDate != null">
+                #{createDate},
+            </if>
+            <if test="loginDate != null">
+                #{loginDate},
+            </if>
+            <if test="ipAddress != null and ipAddress != ''">
+                #{ipAddress},
+            </if>
+            <if test="photo != null and photo != ''">
+                #{photo},
+            </if>
+            <if test="roleId != null">
+                #{roleId},
+            </if>
+        </trim>
+
+    </insert>
+
+
+</mapper>
