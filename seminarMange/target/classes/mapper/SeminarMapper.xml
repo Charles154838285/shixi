@@ -55,5 +55,10 @@
         WHERE room_id=#{roomId}
     </update>
 
+    <delete id="delete">
+        DELETE FROM seminar
+        WHERE room_id = #{roomID}
+    </delete>
+
 
 </mapper>

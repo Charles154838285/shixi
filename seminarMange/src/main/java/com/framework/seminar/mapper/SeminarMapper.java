@@ -16,4 +16,6 @@ public interface SeminarMapper {
     int queryNameCount(String roomName);
 
     Seminar load(int id);
+
+    void delete(int id);
 }

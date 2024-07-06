@@ -42,4 +42,9 @@ public class SeminarServiceImpl implements SeminarService {
     public Seminar load(int id) {
         return this.seminarMapper.load(id);
     }
+
+    @Override
+    public void delete(int id) {
+        this.seminarMapper.delete(id);
+    }
 }

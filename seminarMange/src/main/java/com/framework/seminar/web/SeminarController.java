@@ -8,6 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/sys/demo/seminar")
 public class SeminarController {
@@ -28,7 +31,7 @@ public class SeminarController {
     }
 
 
-    @PostMapping({"/add","/update","/delete"})
+    @PostMapping({"/add","/update"})
     @ResponseBody
     public R add(@RequestBody Seminar seminar){
         try {
@@ -37,6 +40,15 @@ public class SeminarController {
         } catch (Exception e) {
             return R.error(e.getMessage());
         }
+    }
+    @PostMapping("/delete/{id}")
+    @ResponseBody
+    public R delete(@PathVariable("id") int id)
+    { try
+        { this.seminarService.delete(id);
+            return R.ok("操作成功");
+        } catch (Exception e)
+     { return R.error(e.getMessage()); }
     }
 
     @GetMapping("/update/{id}")
@@ -59,3 +71,4 @@ public class SeminarController {
         }
     }
 }
+

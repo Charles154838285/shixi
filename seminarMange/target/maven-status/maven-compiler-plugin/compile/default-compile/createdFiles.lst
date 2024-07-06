@@ -7,7 +7,9 @@ com\framework\rbac\role\service\impl\RoleServiceImpl.class
 com\framework\rbac\role\model\Role.class
 com\framework\rbac\menu\mapper\MenuMapper.class
 com\framework\commons\config\CommonsSpringConfig.class
+com\framework\bookInfo\mapper\BookInfoMapper.class
 com\framework\rbac\log\service\impl\LogServiceImpl.class
+com\framework\bookInfo\model\BookInfo.class
 com\framework\rbac\user\model\SessionUser.class
 com\framework\commons\listener\WebApplicationListener.class
 com\framework\BootSSmRbacApplication.class
@@ -30,13 +32,16 @@ com\framework\rbac\user\web\UserController.class
 com\framework\rbac\dict\web\DictController.class
 com\framework\seminar\web\SeminarController.class
 com\framework\commons\config\CommonsWebConfig.class
+com\framework\bookInfo\service\Impl\BookInfoServiceImpl.class
 com\framework\rbac\user\service\UserService.class
 com\framework\rbac\menu\service\impl\MenuServiceImpl.class
 com\framework\rbac\role\mapper\RoleMapper.class
+com\framework\bookInfo\service\BookInfoService.class
 com\framework\rbac\log\mapper\LogMapper.class
 com\framework\commons\controller\ExceptionHandlerController.class
 com\framework\seminar\serivce\impl\SeminarServiceImpl.class
 com\framework\rbac\role\service\RoleService.class
+com\framework\bookInfo\web\BookInfoController.class
 com\framework\rbac\menu\web\MenuController.class
 com\framework\commons\model\Page.class
 com\framework\rbac\dict\service\impl\DictServiceImpl.class

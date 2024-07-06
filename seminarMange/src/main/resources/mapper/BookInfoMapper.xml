@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.bookInfo.mapper.BookInfoMapper">
+
+    <resultMap type="com.framework.bookInfo.model.BookInfo" id="BookInfoResultMap">
+        <id column="book_id" property="bookId"/>
+        <result column="room_id" property="roomId"/>
+        <result column="account" property="account"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap type="com.framework.bookInfo.model.BookInfo" id="BookInfoFindResultMap" extends="BookInfoResultMap">
+        <association property="seminar" column="room_id" resultMap="com.framework.seminar.mapper.SeminarMapper.SeminarResultMap"/>
+    </resultMap>
+
+    <sql id="book_info_columns">
+        book_id,room_id,account,start_date,end_date,status
+    </sql>
+
+    <sql id="querySQL">
+        <if test="queryMap.account != null and queryMap.account!=''">
+            AND account LIKE  CONCAT(#{queryMap.account},'%')
+        </if>
+        <if test="queryMap.roomName != null and queryMap.roomName!=''">
+            AND t2.room_name LIKE CONCAT(#{queryMap.roomName},'%')
+        </if>
+        <if test="queryMap.status != null">
+            AND status =#{queryMap.status}
+        </if>
+    </sql>
+
+    <select id="list" resultMap="BookInfoFindResultMap" parameterType="com.framework.commons.model.Page">
+        SELECT
+        t1.book_id,t1.room_id,t1.account,t1.start_date,t1.end_date,t1.status,
+        t2.room_type,t2.room_name
+        FROM book_info t1,seminar t2
+        WHERE  t1.room_id=t2.room_id
+        <include refid="querySQL"/>
+        ORDER BY status ASC
+        LIMIT ${offset},${pageSize}
+    </select>
+
+    <select id="totalCount" resultType="_int" parameterType="com.framework.commons.model.Page" >
+        SELECT
+        COUNT(*)
+        FROM book_info t1,seminar t2
+        WHERE t1.room_id=t2.room_id
+        <include refid="querySQL"/>
+    </select>
+
+</mapper>

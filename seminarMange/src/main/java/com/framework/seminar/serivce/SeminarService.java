@@ -9,4 +9,5 @@ public interface SeminarService {
     void saveOrUpdate(Seminar course);
     int queryNameCount(String name);
     Seminar load(int id);
+    void delete(int id);
 }

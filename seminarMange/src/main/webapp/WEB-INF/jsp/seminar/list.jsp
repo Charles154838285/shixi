@@ -48,10 +48,8 @@
                     <div class="ibox-title">
                         <h5>${Room.roomName}</h5>
                         <div class="ibox-tools">
-                            <c:if test="${Room.status == 1}">
                                 <a href="javascript:;" pk-id="${Room.roomId}" class="btn btn-success btn-xs room-update-btn" style="color: #FFFFFF">编辑</a>
                                 <a href="javascript:;" pk-id="${Room.roomId}" class="btn btn-danger btn-xs room-delete-btn" style="color: #FFFFFF">删除</a>
-                            </c:if>
                         </div>
 
                     </div>
@@ -63,6 +61,18 @@
                         <p>
                             容量：${Room.capacity}
                         </p>
+                        <c:choose>
+                            <c:when test="${Room.status == 1}">
+                                <p>状态：未被预约</p>
+                            </c:when>
+                            <c:when test="${Room.status == 2}">
+                                <p>状态：已被预约</p>
+                            </c:when>
+                            <c:otherwise>
+                                <p>状态：未知</p>
+                            </c:otherwise>
+                        </c:choose>
+
                     </div>
                 </div>
             </div>
@@ -101,33 +111,39 @@
                 content: 'sys/demo/seminar/update/'+room_id
             });
         });
-        $(".room-delete-btn").on("click",function () {
+        $(".room-delete-btn").on("click", function () {
             var id = $(this).attr("pk-id");
+            console.log("Delete button clicked. Room ID:", id); // 调试输出
+
             layer.confirm('您确定要删除该研讨室吗？', {
-                // skin: 'layui-layer-molv', //样式类名
-                btn: ['确定删除','取消'], //按钮
-                shade: 0.01, //显示遮罩
-                shift:6,
-            }, function(){
-                layer.msg('的确很重要', {icon: 1});
-                //需要发送ajax请求
+                btn: ['确定删除', '取消'], // 按钮
+                shade: 0.01, // 显示遮罩
+                shift: 6,
+            }, function () {
+                console.log("Confirmed deletion for Room ID:", id); // 调试输出
+
+                // 需要发送ajax请求
                 $.ajax({
-                    type:"post",
-                    url:"sys/demo/seminar/delete",
-                    data:JSON.stringify({roomId: id, status: 2}),
-                    contentType:"application/json;charset=UTF-8",
-                    success:function (data) {
-                        if(data.flag=="success"){
-                            window.location.reload();
-                            return false;
-                        }else{
-                            layer.msg('操作失败');
-                            return false;
+                    type: "POST",
+                    url: "sys/demo/seminar/delete/" + id, // 确保URL正确
+                    contentType: "application/json;charset=UTF-8",
+                    success: function (data) {
+                        console.log("AJAX request succeeded:", data); // 调试输出
+                        if (data.code == 0) {
+                            layer.msg('删除成功', {icon: 1}); // 提示删除成功
+                        } else {
+                            layer.msg('删除失败', {icon: 2}); // 提示删除失败
                         }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("AJAX request failed:", xhr, status, error); // 调试输出
+                        layer.msg('操作失败', {icon: 2});
                     }
-                })
-            }, function(){});
-        })
+                });
+            }, function () {
+                layer.msg('操作取消');
+            });
+        });
     });
 </script>
 </body>

@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>系统角色管理 - 更新</title>
+    <title>研讨室管理 - 更新</title>
 
     <link rel="shortcut icon" href="favicon.ico">
     <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
@@ -29,9 +29,9 @@
         <div class="ibox float-e-margins">
             <!-- 定义内容 -->
             <div class="ibox-content">
-                <form  class="form-horizontal" id="roomForm">
+                <form  class="form-horizontal" id="roomForm">  <!-- 会用这个id将下面的数据直接转换为JSON数据 -->
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">研讨室容量</label>
+                        <label class="col-sm-2 control-label">研讨室号</label>
                         <div class="col-sm-4">
                             <input type="text" name="roomName" id="roomName" value="${Room.roomName}" class="form-control">
                         </div>
@@ -43,10 +43,10 @@
                         <label class="col-sm-2 control-label">研讨室类型</label>
                         <div class="col-sm-4">
                             <select class="form-control m-b" name="roomType" id="roomType" >
-                                <option value="${Room.roomType}">${Room.roomType}</option>
-                                <option value="办公">办公</option>
-                                <option value="讨论">讨论</option>
-                                <option value="学术会议">学术会议</option>
+                                <option value="">请选择研讨室类型</option>
+                                <option value="小型研讨室">小型研讨室</option>
+                                <option value="中型研讨室">中型研讨室</option>
+                                <option value="大型研讨室">大型研讨室</option>
                             </select>
                         </div>
                         <div class="col-sm-6">
@@ -63,11 +63,26 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-sm-2 control-label">状态</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="status" id="status">
+                                <option value="">请选择状态</option>
+                                <option value="1">未被预约</option>
+                                <option value="2">已被预约</option>
+                                <!-- 可以根据需要添加更多状态选项 -->
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="help-block m-b-none text-success"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-sm-6 col-sm-offset-3">
                             <button class="btn btn-primary" type="submit">修改</button>
                             <button class="btn btn-default" type="reset">取消</button>
                         </div>
                     </div>
+                    <!--更新需要传递主键ID，设置隐藏域-->
                     <input type="hidden" name="roomId" value="${Room.roomId}">
                 </form>
             </div>
@@ -88,23 +103,26 @@
 <script>
     $(function(){
         let icon = "<i class='fa fa-times-circle'></i> ";
-        jQuery.validator.addMethod("isNumber", function (value,element){
-            var reg=/^([1-9]\d*|[0]{1,1})$/;
+        // 自定义验证方法：正整数
+        jQuery.validator.addMethod("isNumber", function (value, element) {
+            var reg = /^([1-9]\d*|[0]{1,1})$/;
             return this.optional(element) || (reg.test(value));
         }, "研讨室容量必须为正整数");
+
+        // 初始化表单验证
         $("#roomForm").validate({
-            rules:{
+            rules: {
                 roomName: {
-                    required:true,
-                    remote:{
-                        type:"POST",
+                    required: true,
+                    remote: {
+                        type: "POST",
                         dataType: "json",
-                        url:"sys/demo/seminar/query/name",
+                        url: "sys/demo/seminar/query/name",
                         data: {
-                            name:function (){
+                            name: function () {
                                 return $("#roomName").val();
                             },
-                            oldName: function() {
+                            oldName: function () {
                                 return '${Room.roomName}';
                             }
                         }
@@ -113,51 +131,59 @@
                 roomType: {
                     required: true
                 },
-                capacity:{
-                    required:true,
-                    isNumber:true,
+                capacity: {
+                    required: true,
+                    isNumber: true
+                },
+                status: { // 新添加的 status 字段验证
+                    required: true
                 }
             },
-            messages:{
-                roomName:{
-                    equired: icon+"请输入研讨室号",
-                    remote: icon+"研讨室号必须唯一"
+            messages: {
+                roomName: {
+                    required: icon + "请输入研讨室名称",
+                    remote: icon + "研讨室名称已存在"
                 },
                 roomType: {
-                    required: icon+"请输入研讨室类型"
+                    required: icon + "请选择研讨室类型"
                 },
-                capacity:{
-                    required:icon+"请输入研讨室容量",
-                    isNumber: icon+"必须为正整数"
+                capacity: {
+                    required: icon + "请输入研讨室容量",
+                    isNumber: icon + "研讨室容量必须为正整数"
+                },
+                status: { // 新添加的 status 字段消息提示
+                    required: icon + "请选择研讨室状态"
                 }
             },
-            onfocusout:false,
-            onkeyup:false,
-            submitHandler:function(form){
-                //使用Ajax方式提交
+            onfocusout: false,
+            onkeyup: false,
+            submitHandler: function(form) {
+                // 使用Ajax方式提交表单数据
                 $.ajax({
-                    type:"post",
-                    url:"sys/demo/seminar/update",
-                    data:JSON.stringify($("#roomForm").serializeJSON()),
-                    contentType:"application/json;charset=UTF-8",
-                    processData:false,
-                    dataType:"json",
-                    success:function(data){
-                        if(data.flag=="success"){
-                            layer.msg(data.message,function(){
+                    type: "post",
+                    url: "sys/demo/seminar/update",
+                    data: JSON.stringify($("#roomForm").serializeJSON()),
+                    contentType: "application/json;charset=UTF-8",
+                    processData: false,
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.flag == "success") {
+                            layer.msg(data.message, function() {
                                 window.parent.location.reload();
                             });
                             return false;
-                        }else{
+                        } else {
                             layer.msg(data.message);
                             return false;
                         }
+                    },
+                    error: function() {
+                        layer.msg('请求出错，请稍后重试');
                     }
                 });
-                return false;
+                return false; // 阻止表单的默认提交行为
             }
-
-        })
+        });
     });
 </script>
 </body>
