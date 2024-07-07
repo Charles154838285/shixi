@@ -16,15 +16,16 @@ public class BookInfoController extends BaseController {
     @Autowired
     private BookInfoService bookInfoService;
 
-    @GetMapping("/index")
+    @GetMapping("/index")//管理员端预约
     public String find(Page<BookInfo> page, Model model) {
         model.addAttribute("page", bookInfoService.find(page));
         return "book/find";
     }
 
-    @GetMapping("/book")
-    public String find1(Page<BookInfo> page, Model model) {
+    @GetMapping("/record")//用户端查询记录
+    public String find2(Page<BookInfo> page, Model model) {
         model.addAttribute("page", bookInfoService.find(page));
-        return "book/book";
+        return "book/record";
     }
 }
+

@@ -13,11 +13,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="${pageContext.request.contextPath}/">
 
+    <!-- 引入 jQuery 和 layer 插件 -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/layer/layer.js"></script>
+
     <title>研讨室展示</title>
 
-    <link rel="shortcut icon" href="favicon.ico"> <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
-
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
 </head>
@@ -29,9 +33,6 @@
                 <div class="ibox-title">
                     <h5>研讨室信息管理</h5>
                     <div class="ibox-tools">
-                        <a href="javascript:;" id="room-add-btn" class="btn btn-primary btn-xs">
-                            <i class="fa fa-plus"></i> 新增研讨室
-                        </a>
                         <a href="javascript:;" class="btn btn-white btn-xs" style="color: #000000" onclick="javascript:window.location.reload()">
                             <i class="fa fa-refresh"></i> 刷新
                         </a>
@@ -48,19 +49,15 @@
                     <div class="ibox-title">
                         <h5>${Room.roomName}</h5>
                         <div class="ibox-tools">
-                            <a href="javascript:;" pk-id="${Room.roomId}" class="btn btn-success btn-xs room-update-btn" style="color: #FFFFFF">编辑</a>
-                            <a href="javascript:;" pk-id="${Room.roomId}" class="btn btn-danger btn-xs room-delete-btn" style="color: #FFFFFF">删除</a>
+                            <c:if test="${Room.status == 1}">
+                                <a href="javascript:;" pk-id="${Room.roomId}" class="btn btn-success btn-xs room-book-btn" style="color: #FFFFFF">预约</a>
+                            </c:if>
                         </div>
-
                     </div>
                     <div class="ibox-content">
                         <h5>研讨室信息</h5>
-                        <p>
-                            类型：${Room.roomType}
-                        </p>
-                        <p>
-                            容量：${Room.capacity}
-                        </p>
+                        <p>类型：${Room.roomType}</p>
+                        <p>容量：${Room.capacity}</p>
                         <c:choose>
                             <c:when test="${Room.status == 1}">
                                 <p>状态：未被预约</p>
@@ -72,7 +69,6 @@
                                 <p>状态：未知</p>
                             </c:otherwise>
                         </c:choose>
-
                     </div>
                 </div>
             </div>
@@ -88,60 +84,19 @@
 <!-- 自定义js -->
 <script src="js/content.js?v=1.0.0"></script>
 
-<script type="text/javascript">
+<script>
     $(function () {
-        $("#room-add-btn").on("click",function () {
-            layer.open({
-                title:"新建研讨室信息",
-                type: 2,
-                area: ['800px', '330px'],
-                fixed: false, //不固定
-                shade: 0.01,
-                content: 'sys/demo/seminar/add'
-            });
-        });
-        $(".room-update-btn").on("click",function () {
+        // 绑定点击事件到预约按钮
+        $(".room-book-btn").on("click", function () {
             var room_id = $(this).attr("pk-id");
+            var account = 'user123'; // 默认账号，实际使用时应该动态获取
             layer.open({
-                title:"更新研讨室信息",
+                title: "确认预约研讨室信息",
                 type: 2,
                 area: ['800px', '330px'],
                 fixed: false, //不固定
                 shade: 0.01,
-                content: 'sys/demo/seminar/update/'+room_id
-            });
-        });
-        $(".room-delete-btn").on("click", function () {
-            var id = $(this).attr("pk-id");
-            console.log("Delete button clicked. Room ID:", id); // 调试输出
-
-            layer.confirm('您确定要删除该研讨室吗？', {
-                btn: ['确定删除', '取消'], // 按钮
-                shade: 0.01, // 显示遮罩
-                shift: 6,
-            }, function () {
-                console.log("Confirmed deletion for Room ID:", id); // 调试输出
-
-                // 需要发送ajax请求
-                $.ajax({
-                    type: "POST",
-                    url: "sys/demo/seminar/delete/" + id, // 确保URL正确
-                    contentType: "application/json;charset=UTF-8",
-                    success: function (data) {
-                        console.log("AJAX request succeeded:", data); // 调试输出
-                        if (data.code == 0) {
-                            layer.msg('删除成功', {icon: 1}); // 提示删除成功
-                        } else {
-                            layer.msg('删除失败', {icon: 2}); // 提示删除失败
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.log("AJAX request failed:", xhr, status, error); // 调试输出
-                        layer.msg('操作失败', {icon: 2});
-                    }
-                });
-            }, function () {
-                layer.msg('操作取消');
+                content: 'sys/demo/seminar/book/' + room_id
             });
         });
     });

@@ -8,6 +8,7 @@ import java.util.Date;
 @Data
 public class BookInfo {
     private Integer bookId;
+    private String username;
     private String account;
     private Integer roomId;
     private Date startDate;

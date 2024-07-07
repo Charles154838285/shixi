@@ -10,8 +10,17 @@
         <result column="status" property="status"/>
     </resultMap>
 
+    <!-- 新建的 Seminar 扩展 resultMap，包含 BookInfo 信息 -->
+    <resultMap type="com.framework.seminar.model.Seminar" id="seminarInfoFindResultMap" extends="SeminarResultMap">
+        <association property="bookInfo" column="room_id" resultMap="com.framework.bookInfo.mapper.BookInfoMapper.BookInfoResultMap"/>
+    </resultMap>
+
     <sql id="sys_room_columns">
         room_id,room_name,room_type,capacity,status
+    </sql>
+
+    <sql id="sys_allroom_columns">
+        room_id,room_name,room_type,capacity,seminar.status,book_info.status,account
     </sql>
 
     <select id="list" resultMap="SeminarResultMap">
@@ -19,6 +28,12 @@
         ORDER BY room_id ASC
     </select>
 
+    <select id="alllist" resultMap="SeminarResultMap">
+        SELECT <include refid="sys_allroom_columns" />
+        FROM seminar
+        JOIN  book_info ON seminar.room_id = book_info.room_id
+        ORDER BY seminar.room_id ASC
+    </select>
     <insert id="add" parameterType="com.framework.seminar.model.Seminar">
         INSERT INTO seminar
             (room_name,room_type,capacity)
@@ -55,7 +70,14 @@
         WHERE room_id=#{roomId}
     </update>
 
-    <delete id="delete">
+    <insert id="insertBook" parameterType="com.framework.bookInfo.model.BookInfo">
+        INSERT INTO book_info
+            (room_id,account,start_date,end_date,status,user_name)
+        VALUES
+            (#{roomId},#{account},#{startDate},#{endDate},#{status},#{username})
+    </insert>
+
+    <delete id="delete" >
         DELETE FROM seminar
         WHERE room_id = #{roomID}
     </delete>

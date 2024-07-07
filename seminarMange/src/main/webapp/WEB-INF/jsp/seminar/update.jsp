@@ -110,7 +110,7 @@
         }, "研讨室容量必须为正整数");
 
         // 初始化表单验证
-        $("#roomForm").validate({
+        $("#roomForm").validate({//表单
             rules: {
                 roomName: {
                     required: true,

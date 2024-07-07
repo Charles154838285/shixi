@@ -36,7 +36,7 @@
             <div class="ibox-content">
                 <div class="row m-b-sm m-t-sm">
                     <div class="col-md-2">
-                       <!-- <button type="button" id="user-add0-btn" class="btn btn-primary btn-sm"><i class="fa fa-user-plus"></i> 新建</button>-->
+                        <!-- <button type="button" id="user-add0-btn" class="btn btn-primary btn-sm"><i class="fa fa-user-plus"></i> 新建</button>-->
                         <button type="button" id="user-loading-btn" class="btn btn-white btn-sm"><i class="fa fa-refresh"></i> 刷新</button>
                     </div>
                     <form action="sys/demo/info/index" method="get" id="searchForm">
@@ -77,7 +77,7 @@
                             <tr>
                                     <%--class="client-avatar"--%>
                                 <td>
-                                   ${bookInfo.bookId}
+                                        ${bookInfo.bookId}
                                 </td>
                                 <td>
                                     <a href="javascript:;" class="client-link">${bookInfo.account}</a>
