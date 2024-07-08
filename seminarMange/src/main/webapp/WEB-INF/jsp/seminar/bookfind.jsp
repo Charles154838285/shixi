@@ -28,6 +28,7 @@
           <div class="col-md-3">
             <div class="input-group">
               <input type="text" placeholder="请输入研讨室号" class="input-sm form-control" name="roomName" value="${queryMap.roomName}">
+              <input type="hidden" name="userInfo" id="userInfo" value="${userInfo.userId}">
             </div>
           </div>
           <div class="col-md-100">
@@ -60,7 +61,7 @@
           <h5>${Room.roomName}</h5>
           <div class="ibox-tools">
             <c:if test="${Room.status == 1}">
-              <a href="javascript:;" pk-id="${Room.roomId}" class="btn btn-success btn-xs room-book-btn" style="color: #FFFFFF">预约</a>
+              <a href="javascript:;" pk-id="${Room.roomId}" pk-user="${userInfo.userId}" class="btn btn-success btn-xs room-book-btn" style="color: #FFFFFF">预约</a>
             </c:if>
           </div>
         </div>
@@ -102,14 +103,14 @@
     // 绑定点击事件到预约按钮
     $(".room-book-btn").on("click", function () {
       var room_id = $(this).attr("pk-id");
-      var account = 'user123'; // 默认账号，实际使用时应该动态获取
+      var user_id = $(this).attr("pk-user"); // 默认账号，实际使用时应该动态获取
       layer.open({
         title: "确认预约研讨室信息",
         type: 2,
         area: ['800px', '330px'],
         fixed: false, //不固定
         shade: 0.01,
-        content: 'sys/demo/seminar/book/' + room_id
+        content: 'sys/demo/seminar/book/' + room_id + '/' + user_id
       });
     });
 

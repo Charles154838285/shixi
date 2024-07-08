@@ -1,6 +1,7 @@
 package com.framework.seminar.mapper;
 
 import com.framework.bookInfo.model.BookInfo;
+import com.framework.rbac.user.model.User;
 import com.framework.seminar.model.Seminar;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -24,5 +25,7 @@ public interface SeminarMapper {
     void delete(int id);
 
     void insertBook(BookInfo bookInfo);
+
+    User loadUser(Integer ID);
 
 }

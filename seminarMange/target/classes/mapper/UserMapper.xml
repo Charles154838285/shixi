@@ -24,7 +24,7 @@
     </sql>
     <!-- 登录查询 -->
     <select id="login" resultType="com.framework.rbac.user.model.SessionUser">
-        SELECT user_id userId,account FROM sys_user WHERE account=#{account} AND password=MD5(#{password})
+        SELECT user_id userId,account,user_name FROM sys_user WHERE account=#{account} AND password=MD5(#{password})
     </select>
     <!-- 用户的物理分页 -->
     <sql id="user_limit_query">

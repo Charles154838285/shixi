@@ -2,6 +2,7 @@ package com.framework.seminar.serivce.impl;
 
 import com.framework.bookInfo.model.BookInfo;
 import com.framework.commons.exception.ServiceException;
+import com.framework.rbac.user.model.User;
 import com.framework.seminar.mapper.SeminarMapper;
 import com.framework.seminar.model.Seminar;
 import com.framework.seminar.serivce.SeminarService;
@@ -81,6 +82,11 @@ public class SeminarServiceImpl implements SeminarService {
     @Override
     public List<Seminar> searchRooms(String roomName, String roomType, Integer status) {
             return this.seminarMapper.searchRooms(roomName,roomType,status);
+    }
+
+    @Override
+    public User loadUser(Integer ID) {
+        return this.seminarMapper.loadUser(ID);
     }
 
 

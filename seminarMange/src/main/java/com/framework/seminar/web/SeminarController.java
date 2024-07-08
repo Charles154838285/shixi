@@ -3,6 +3,7 @@ package com.framework.seminar.web;
 import com.framework.bookInfo.model.BookInfo;
 import com.framework.commons.model.Page;
 import com.framework.commons.model.R;
+import com.framework.rbac.user.model.SessionUser;
 import com.framework.seminar.model.Seminar;
 import com.framework.seminar.serivce.SeminarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +61,10 @@ public class SeminarController {
         return "seminar/update";
     }
 
-    @GetMapping("/book/{id}")
-    public String bookTime(@PathVariable("id") Integer id,Model model){
+    @GetMapping("/book/{id}/{user_id}")
+    public String bookTime(@PathVariable("id") Integer id,@PathVariable("user_id") Integer user_id,Model model){
         model.addAttribute("Seminar",this.seminarService.load(id));
+        model.addAttribute("userinfo",this.seminarService.loadUser(user_id));
         return "seminar/booktime";
     }
 
@@ -96,7 +99,7 @@ public class SeminarController {
         }
     }
     @RequestMapping("/bookfind")
-    public String searchRoom(Model model, @RequestParam Map<String, String> queryParams) {
+    public String searchRoom(Model model, @RequestParam Map<String, String> queryParams, HttpSession session) {
         String roomName = null;
         if (queryParams.get("roomName") != null) {
             roomName = queryParams.get("roomName");
@@ -114,6 +117,8 @@ public class SeminarController {
             List<Seminar> rooms = seminarService.searchRooms(roomName, roomType, status);
             model.addAttribute("toRoomList", rooms);
             model.addAttribute("queryMap",queryParams);
+            SessionUser sessionUser = (SessionUser)session.getAttribute("session_user");
+            model.addAttribute("userInfo",sessionUser);
       /*  }else{
             // 执行搜索逻辑
             List<Seminar> rooms = seminarService.searchRooms(roomName, roomType, status);

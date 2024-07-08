@@ -34,7 +34,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">学（工）号</label>
                         <div class="col-sm-4">
-                            <input type="text" name="account" id="account" value="${Seminar.bookInfo.account}" class="form-control">
+                            <input type="text" name="account" id="account" value="${userinfo.account}" class="form-control readonly" readonly>
                         </div>
                         <div class="col-sm-6">
                             <span class="help-block m-b-none text-success"></span>
@@ -44,7 +44,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">预约人姓名</label>
                         <div class="col-sm-4">
-                            <input type="text" name="username" id="username" value="${Seminar.bookInfo.username}" class="form-control">
+                            <input type="text" name="username" id="username" value="${userinfo.userName}" class="form-control readonly" readonly>
                         </div>
                         <div class="col-sm-6">
                             <span class="help-block m-b-none text-success"></span>
