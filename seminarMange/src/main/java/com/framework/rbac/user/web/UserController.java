@@ -237,5 +237,12 @@ public class UserController extends BaseController {
 		System.out.println(resultMap);
 		return resultMap;
 	}
+	/*@GetMapping("/own")
+	public String editPhoto(Integer id, Model model) {
+		model.addAttribute("user", this.userService.load(id));
+		return "user/image";
+	}
+*/
+
 
 }

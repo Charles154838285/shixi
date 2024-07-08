@@ -38,10 +38,11 @@
             </div>
             <!-- 使用验证框架这里还是使用type="submit",在js中控制事件 -->
             <button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
-
             <p class="text-center text-danger">${message}</p>
 
         </form>
+        <button type="submit" class="btn btn-primary block full-width m-b" id="Register">注 册</button>
+
     </div>
 </div>
 
@@ -60,6 +61,28 @@
 
 <!-- 登录表单验证-->
 <script type="text/javascript" src="js/admin/login.js"></script>
+
+
+<script>
+    $(function () {
+        // 绑定点击事件到预约按钮
+        $("#Register").click(function () {
+            layer.open({
+                title:"系统用户管理 - 注册",
+                type: 2,
+                area: ['780px', '450px'],
+                fixed: false, //不固定
+                shade: 0.01,
+                content: 'sys/user/add'
+            });
+        });
+
+
+
+    });
+</script>
+
+
 
 </body>
 

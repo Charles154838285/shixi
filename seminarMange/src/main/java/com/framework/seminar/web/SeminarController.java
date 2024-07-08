@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -32,13 +33,6 @@ public class SeminarController {
         return "seminar/add";
     }
 
-    @GetMapping("/book")
-    public String toRoomView1(Model model) {
-        model.addAttribute("toRoomList",this.seminarService.list());
-//        SessionUser sessionUser = (SessionUser) session.getAttribute("session_user");
-//        System.out.println(sessionUser);
-        return "seminar/book";
-    }
     @PostMapping({"/add","/update"})
     @ResponseBody
     public R add(@RequestBody Seminar seminar){
@@ -101,5 +95,35 @@ public class SeminarController {
             return this.seminarService.queryNameCount(name) == 0;
         }
     }
+    @RequestMapping("/bookfind")
+    public String searchRoom(Model model, @RequestParam Map<String, String> queryParams) {
+        String roomName = null;
+        if (queryParams.get("roomName") != null) {
+            roomName = queryParams.get("roomName");
+        }
+        String roomType = null;
+        if (queryParams.get("roomType") != null) {
+            roomType = queryParams.get("roomType");
+        }
+        Integer status = 1;
+       /* if (queryParams.get("status") != null) {
+            status = queryParams.get("status");
+        }*/
+       // if(roomName == null && roomType == null){
+            /*model.addAttribute("toRoomList",this.seminarService.list());*/
+            List<Seminar> rooms = seminarService.searchRooms(roomName, roomType, status);
+            model.addAttribute("toRoomList", rooms);
+            model.addAttribute("queryMap",queryParams);
+      /*  }else{
+            // 执行搜索逻辑
+            List<Seminar> rooms = seminarService.searchRooms(roomName, roomType, status);
+
+            model.addAttribute("toRoomList", rooms);
+            model.addAttribute("queryMap",queryParams);
+        }*/
+        return "seminar/bookfind"; // 返回部分视图
+    }
+
+
 }
 

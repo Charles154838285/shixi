@@ -77,4 +77,11 @@ public class SeminarServiceImpl implements SeminarService {
             throw new ServiceException("预约失败");
         }
     }
+
+    @Override
+    public List<Seminar> searchRooms(String roomName, String roomType, Integer status) {
+            return this.seminarMapper.searchRooms(roomName,roomType,status);
+    }
+
+
 }

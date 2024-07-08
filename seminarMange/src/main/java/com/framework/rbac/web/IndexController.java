@@ -3,6 +3,7 @@ package com.framework.rbac.web;
 import com.framework.commons.controller.BaseController;
 import com.framework.commons.exception.ServiceException;
 import com.framework.rbac.menu.service.MenuService;
+import com.framework.rbac.role.service.RoleService;
 import com.framework.rbac.user.model.SessionUser;
 import com.framework.rbac.user.model.User;
 import com.framework.rbac.user.service.UserService;
@@ -23,7 +24,8 @@ public class IndexController extends BaseController {
 	private UserService userService;
 	@Autowired
 	private MenuService menuService;
-
+	@Autowired
+	private RoleService roleService;
 
 	@GetMapping({"/sys/login","/"})
 	public String login(){
@@ -48,6 +50,7 @@ public class IndexController extends BaseController {
 			return "redirect:/sys/login";
 		}
 	}
+
 	@GetMapping("/sys/main")
 	public String main(Model model){
 		SessionUser sessionUser = (SessionUser) session.getAttribute("session_user");
@@ -68,4 +71,20 @@ public class IndexController extends BaseController {
 	public ModelAndView content(){
 		return forward("content");
 	}
+	@GetMapping("/add")
+	public String add(Model model) {
+		model.addAttribute("roleList",this.roleService.list());
+		return "user/add";
+	}
+	/*@GetMapping("/forget")
+	public String forget(Model model) {
+		model.addAttribute("roleList",this.roleService.list());
+		return "user/password";
+	}*/
+
+
+
+
 }
+
+

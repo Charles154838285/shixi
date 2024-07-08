@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%--
   Created by IntelliJ IDEA.
   User: 44522
@@ -80,7 +80,7 @@
 
                     <div class="form-group">
                         <div class="col-sm-6 col-sm-offset-3">
-                            <button class="btn btn-primary" type="submit">确认</button>
+                            <button class="btn btn-primary" type="submit" id="book_btn">确认</button>
                             <button class="btn btn-default" type="reset">取消</button>
                         </div>
                     </div>
@@ -101,9 +101,31 @@
 <script src="js/content.js?v=1.0.0"></script>
 <!-- 静态包含 -->
 <%@ include file="../include.jsp"%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script>
-    $(function(){
+    $(document).ready(function () {
         let icon = "<i class='fa fa-times-circle'></i> ";
+
+        // 自定义验证方法：验证时间是否为整点（格式为YYYY-MM-DDTHH:00）
+        jQuery.validator.addMethod("wholeHourTime", function (value, element) {
+            var regex = /^\d{4}-\d{2}-\d{2}T[0-2][0-9]:00$/; // 匹配YYYY-MM-DDTHH:00格式
+            return this.optional(element) || regex.test(value);
+        }, icon + "时间必须为整点，例如2024-07-07T14:00。");
+
+        // 自定义验证方法：验证结束时间是否至少比开始时间晚一个小时
+        jQuery.validator.addMethod("minDuration", function (value, element) {
+            var startTime = $("#startDate").val();
+            var endTime = value;
+            if (startTime && endTime) {
+                var startDateTime = new Date(startTime);
+                var endDateTime = new Date(endTime);
+                // 比较日期时间，确保结束时间至少比开始时间晚一个小时
+                return endDateTime - startDateTime >= 3600000; // 3600000毫秒 = 1小时
+            }
+            return true;
+        }, icon + "预约时间不得少于一个小时。");
+
         // 初始化表单验证
         $("#book").validate({
             rules: {
@@ -114,10 +136,13 @@
                     required: true
                 },
                 startDate: {
-                    required: true
+                    required: true,
+                    wholeHourTime: true
                 },
                 endDate: {
-                    required: true
+                    required: true,
+                    wholeHourTime: true,
+                    minDuration: true // 使用自定义规则
                 },
                 remark: {
                     maxlength: 200
@@ -134,10 +159,13 @@
                     required: icon + "请输入预约人姓名"
                 },
                 startDate: {
-                    required: icon + "请选择起始时间"
+                    required: icon + "请选择起始时间",
+                    wholeHourTime: icon + "请选择整点时间，如2024-7.7 14:00"
                 },
                 endDate: {
-                    required: icon + "请选择结束时间"
+                    required: icon + "请选择结束时间",
+                    wholeHourTime: icon + "请选择整点时间，如2024-7.7 14:00",
+                    minDuration: icon + "预约时间不得少于1小时！"
                 },
                 remark: {
                     maxlength: icon + "备注信息不能超过200字"
@@ -198,6 +226,11 @@
                 });
                 return false; // 阻止表单的默认提交行为
             }
+        });
+
+        // 在确认按钮点击时触发表单提交
+        $("#book_btn").click(function() {
+            $("#book").submit();
         });
     });
 </script>

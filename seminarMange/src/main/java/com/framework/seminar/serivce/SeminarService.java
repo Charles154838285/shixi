@@ -13,4 +13,5 @@ public interface SeminarService {
     Seminar load(int id);
     void delete(int id);
     void insertBook(BookInfo bookInfo);
+     List<Seminar> searchRooms(String roomName, String roomType, Integer status);
 }

@@ -109,6 +109,7 @@
                 fixed: false, //不固定
                 shade: 0.01,
                 content: 'sys/demo/seminar/update/'+room_id
+                // content: 'sys/demo/seminar/index/'
             });
         });
         $(".room-delete-btn").on("click", function () {

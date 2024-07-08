@@ -8,7 +8,7 @@ public class Page<T> {
 	/**当前页*/
 	private int pageNow = 1;
 	/**每页显示条数*/
-	private int pageSize = 2;
+	private int pageSize = 5;
 	/**总记录数*/
 	private int totalCount;
 	/**总页数，需要通过总记录和每页显示条数计算得到结果*/

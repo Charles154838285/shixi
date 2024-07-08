@@ -82,5 +82,20 @@
         WHERE room_id = #{roomID}
     </delete>
 
+    <select id="searchRooms" resultMap="SeminarResultMap">
+        SELECT <include refid="sys_room_columns" />
+        FROM seminar
+        <where>
+            <if test="roomName != null and roomName != ''">
+                room_name = #{roomName}
+            </if>
+            <if test="roomType != null and roomType != ''">
+               AND room_type = #{roomType}
+            </if>
+            <if test="status != null ">
+                AND status = #{status}
+            </if>
+        </where>
 
+    </select>
 </mapper>
